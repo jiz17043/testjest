@@ -30,9 +30,6 @@ jobs:
         env:
           JEST_JUNIT_OUTPUT_NAME: results-${{ matrix.iteration }}.xml
 
-      - name: Rename JUnit XML for iteration
-        run: mv test-results/results.xml test-results/results-${{ matrix.iteration }}.xml
-
       - name: Upload test result
         uses: actions/upload-artifact@v4
         with:
