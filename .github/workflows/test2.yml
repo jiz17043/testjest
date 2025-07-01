@@ -64,3 +64,10 @@ jobs:
         if: steps.second_run.outcome == 'success'
         run: |
           python detect_flaky_repo/scripts/detect_flaky_tests2.py
+      
+      - name: Upload flaky tests JSON
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: flaky-test-report
+          path: flaky_test.json
