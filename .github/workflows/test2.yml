@@ -24,7 +24,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p test-results
-          npm test || true
+          npm test
         env:
           JEST_JUNIT_OUTPUT_NAME: results-1.xml
 
