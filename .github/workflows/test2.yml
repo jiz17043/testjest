@@ -61,11 +61,13 @@ jobs:
           path: detect_flaky_repo
       
       - name: Set up Python
+        if: steps.second_run.outcome == 'success'
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install required libraries
+        if: steps.second_run.outcome == 'success'
         run: pip install lxml
 
       - name: Detect flaky tests
@@ -74,7 +76,7 @@ jobs:
           python detect_flaky_repo/scripts/detect_flaky_tests2.py
       
       - name: Upload flaky tests JSON
-        if: always()
+        if: steps.second_run.outcome == 'success'
         uses: actions/upload-artifact@v4
         with:
           name: flaky-test-report
