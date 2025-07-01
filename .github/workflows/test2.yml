@@ -1,0 +1,66 @@
+name: Flaky Test Detector Alternative
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  run-and-analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: First test run
+        id: first_run
+        continue-on-error: true
+        run: |
+          mkdir -p test-results
+          npm test || true
+        env:
+          JEST_JUNIT_OUTPUT_NAME: results-1.xml
+
+      - name: Check first run result
+        if: steps.first_run.outcome == 'success'
+        run: echo "First run passed, no flakiness detected."
+
+      - name: Second test run (only if first run failed)
+        id: second_run
+        if: steps.first_run.outcome != 'success'
+        continue-on-error: true
+        run: |
+          npm test
+        env:
+          JEST_JUNIT_OUTPUT_NAME: results-2.xml
+
+      - name: Fail if second run fails
+        if: steps.first_run.outcome != 'success' && steps.second_run.outcome == 'failure'
+        run: |
+          echo "Test failed again. Not flaky — real failure."
+          exit 1
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: test-results
+
+      - name: Checkout flaky analysis script repo
+        if: steps.second_run.outcome == 'success'
+        uses: actions/checkout@v4
+        with:
+          repository: jiz17043/detect_flaky
+          path: detect_flaky_repo
+
+      - name: Detect flaky tests
+        if: steps.second_run.outcome == 'success'
+        run: |
+          python detect_flaky_repo/scripts/detect_flaky_tests2.py
