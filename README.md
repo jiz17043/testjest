@@ -1,1 +1,3 @@
 # testjest
+
+- add semantic release
