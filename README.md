@@ -1,3 +1,3 @@
 # testjest
 
-- add semantic release
+- add semantic release test
