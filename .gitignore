@@ -1,2 +1,7 @@
 node_modules/
 package-lock.json
+generate-tests.js
+/src/generated/prisma
+.env
+api-trace.log
+junit.xml
