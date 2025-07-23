@@ -1,3 +1,4 @@
 # testjest
 
-- add semantic release test
+- add semantic release
+- add renovate bot
